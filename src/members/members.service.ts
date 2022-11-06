@@ -39,6 +39,14 @@ export class MembersService {
     return found;
   }
 
+  async deleteMember(id: number): Promise<void> {
+    const result = await this.memberRepository.delete(id);
+
+    if (result.affected === 0) {
+      throw new NotFoundException(`Can't find Board with id ${id}`);
+    }
+  }
+
   //
   // deleteMember(id: string): void {
   //   // 특정 ID의 회원 정보를 삭제하는 기능
