@@ -21,7 +21,7 @@ lerna-debug.log*
 
 # IDEs and editors
 src/configs/
-/src/docker/
+/docker/
 .idea
 .project
 .classpath
