@@ -55,11 +55,13 @@ export class MembersService {
     return found;
   }
 
-  async deleteMember(id: number): Promise<void> {
-    const result = await this.memberRepository.delete(id);
+  async deleteMember(id: number, user: User): Promise<void> {
+    // 로그인한 해당 관리자가 생성한 특정 ID의 회원 정보를 삭제하는 기능
+    const result = await this.memberRepository.delete({ id, user });
 
     if (result.affected === 0) {
-      throw new NotFoundException(`Can't find Board with id ${id}`);
+      // 존재하지 않는 ID의 회원 정보를 삭제하려 할 때 예외 생성
+      throw new NotFoundException(`Can't find Member with id ${id}`);
     }
   }
   // 특정 ID의 회원 상태(등급)를 수정하는 기능

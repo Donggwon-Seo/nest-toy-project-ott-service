@@ -28,10 +28,10 @@ export class MembersController {
   @Post() // 회원 정보 생성 기능
   @UsePipes(ValidationPipe) // 파이프를 이용한 유효성 체크
   createMember(
-    createMemberDto: CreateMemberDto,
-    user: User, // 회원 정보를 생성할 때, 생성한 유저(관리자) 정보 넣어주기
+    @Body() createMemberDto: CreateMemberDto,
+    @GetUser() user: User, // 회원 정보를 생성할 때, 생성한 유저(관리자) 정보 넣어주기
   ): Promise<Member> {
-    // DTO 적용
+    // 로그 남기기
     return this.membersService.createMember(createMemberDto, user);
   }
 
@@ -46,8 +46,11 @@ export class MembersController {
   }
 
   @Delete('/:id')
-  deleteMember(@Param('id', ParseIntPipe) id): Promise<void> {
-    return this.membersService.deleteMember(id);
+  deleteMember(
+    @Param('id', ParseIntPipe) id,
+    @GetUser() user: User,
+  ): Promise<void> {
+    return this.membersService.deleteMember(id, user);
   }
   @Patch('/:id/status') // 특정 ID에 대한 회원 상태 수정
   updateMemberStatus(
