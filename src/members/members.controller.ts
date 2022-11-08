@@ -2,15 +2,15 @@ import {
   Body,
   Controller,
   Delete,
-  Get,
+  Get, Logger,
   Param,
   ParseIntPipe,
   Patch,
   Post,
   UseGuards,
   UsePipes,
-  ValidationPipe,
-} from '@nestjs/common';
+  ValidationPipe
+} from "@nestjs/common";
 import { MembersService } from './members.service';
 import { CreateMemberDto } from './dto/create-member.dto';
 import { Member } from './member.entity';
@@ -23,6 +23,7 @@ import { GetUser } from '../auth/get-user.decorator';
 @Controller('members')
 @UseGuards(AuthGuard()) // 인증된 유저만 회원 정보를 보거나 수정 가능
 export class MembersController {
+  private logger = new Logger('Members');
   constructor(private membersService: MembersService) {} // dependency injection(의존성 주입)
 
   @Post() // 회원 정보 생성 기능
@@ -32,11 +33,15 @@ export class MembersController {
     @GetUser() user: User, // 회원 정보를 생성할 때, 생성한 유저(관리자) 정보 넣어주기
   ): Promise<Member> {
     // 로그 남기기
+    this.logger.verbose(`User ${user.username} creating a new board. 
+    Payload: ${JSON.stringify(createMemberDto)}`);
     return this.membersService.createMember(createMemberDto, user);
   }
 
   @Get() // 해당 관리자가 생성한 모든 회원 정보를 가져오는 기능
   getAllMembers(@GetUser() user: User): Promise<Member[]> {
+    //로그 남기기, 로그 객체를 남기면 됨
+    this.logger.verbose(`User ${user.username} trying to get all members`);
     return this.membersService.getAllMembers(user);
   }
 
