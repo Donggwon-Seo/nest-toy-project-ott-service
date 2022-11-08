@@ -4,6 +4,7 @@ import { CreateMemberDto } from './dto/create-member.dto';
 import { MemberRepository } from './member.repository';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Member } from './member.entity';
+import { User } from '../auth/user.entity';
 
 @Injectable()
 export class MembersService {
@@ -12,7 +13,10 @@ export class MembersService {
     private memberRepository: MemberRepository,
   ) {}
 
-  async createMember(createMemberDto: CreateMemberDto): Promise<Member> {
+  async createMember(
+    createMemberDto: CreateMemberDto,
+    user: User,
+  ): Promise<Member> {
     // 회원 정보 생성 기능
     // DTO 적용
     const { name, number } = createMemberDto;
@@ -21,10 +25,22 @@ export class MembersService {
       name,
       number,
       status: MemberStatus.NON_SUBSCRIBE,
+      user,
     });
 
     await this.memberRepository.save(member);
     return member;
+  }
+
+  async getAllMembers(user: User): Promise<Member[]> {
+    // 해당 관리자가 생성한 모든 회원 정보를 가져오는 기능
+    const query = this.memberRepository.createQueryBuilder('member');
+
+    query.where('member.userId = :userId', { userId: user.id });
+
+    const members = await query.getMany();
+
+    return members;
   }
 
   async getMemberById(id: number): Promise<Member> {
