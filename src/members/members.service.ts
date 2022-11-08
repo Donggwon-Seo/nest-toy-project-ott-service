@@ -46,18 +46,13 @@ export class MembersService {
       throw new NotFoundException(`Can't find Board with id ${id}`);
     }
   }
+  // 특정 ID의 회원 상태(등급)를 수정하는 기능
+  async updateMemberStatus(id: number, status: MemberStatus): Promise<Member> {
+    const member = await this.getMemberById(id);
 
-  //
-  // deleteMember(id: string): void {
-  //   // 특정 ID의 회원 정보를 삭제하는 기능
-  //   const found = this.getMemberById(id); // 존재하지 않는 ID의 회원 정보를 삭제하려 할 때 에외 생성
-  //   this.members = this.members.filter((member) => member.id !== found.id);
-  // }
-  //
-  // updateMemberStatus(id: string, status: MemberStatus): Member {
-  //   // 특정 ID의 회원 상태(등급)를 수정하는 기능
-  //   const member = this.getMemberById(id);
-  //   member.status = status;
-  //   return member;
-  // }
+    member.status = status;
+    await this.memberRepository.save(member);
+
+    return member;
+  }
 }
